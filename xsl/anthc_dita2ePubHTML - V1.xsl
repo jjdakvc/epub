@@ -47,16 +47,46 @@
 			</h1>
 		</xsl:when>
 		<xsl:when test="parent::sect1">
-			<h2 xmlns="http://www.w3.org/1999/xhtml">
+		    <xsl:variable name="topic-level" select="count(ancestor::topic/preceding-sibling::topic)+1"/>
+		    <xsl:variable name="sect1-level" select="count(parent::sect1/preceding-sibling::sect1)+1"/>
+		    <h2 xmlns="http://www.w3.org/1999/xhtml" style="margin-left:-25px">
 			<xsl:call-template name="echo.id"/>
+			<xsl:value-of select="concat($topic-level,'.',$sect1-level,' ')"/>
 			<xsl:apply-templates/>
 			</h2>
 		</xsl:when>
-		<xsl:when test="parent::sect2|parent::sect3|parent::sect4">
-			<h3 xmlns="http://www.w3.org/1999/xhtml">
+		<xsl:when test="parent::sect2">
+		    <xsl:variable name="topic-level" select="count(ancestor::topic/preceding-sibling::topic)+1"/>
+		    <xsl:variable name="sect1-level" select="count(ancestor::sect1/preceding-sibling::sect1)+1"/>
+		    <xsl:variable name="sect2-level" select="count(parent::sect2/preceding-sibling::sect2)+1"/>
+			<h3 xmlns="http://www.w3.org/1999/xhtml" style="margin-left:-25px">
 			<xsl:call-template name="echo.id"/>
+			<xsl:value-of select="concat($topic-level,'.',$sect1-level,'.',$sect2-level,' ')"/>
 			<xsl:apply-templates/>
 			</h3>
+		</xsl:when>
+		<xsl:when test="parent::sect3">
+		    <xsl:variable name="topic-level" select="count(ancestor::topic/preceding-sibling::topic)+1"/>
+		    <xsl:variable name="sect1-level" select="count(ancestor::sect1/preceding-sibling::sect1)+1"/>
+		    <xsl:variable name="sect2-level" select="count(ancestor::sect2/preceding-sibling::sect2)+1"/>
+		     <xsl:variable name="sect3-level" select="count(parent::sect3/preceding-sibling::sect3)+1"/>
+			<h4 xmlns="http://www.w3.org/1999/xhtml" style="margin-left:-25px">
+			<xsl:call-template name="echo.id"/>
+			<xsl:value-of select="concat($topic-level,'.',$sect1-level,'.',$sect2-level,'.',$sect3-level,' ')"/>
+			<xsl:apply-templates/>
+			</h4>
+		</xsl:when>
+		<xsl:when test="parent::sect4">
+		    <xsl:variable name="topic-level" select="count(ancestor::topic/preceding-sibling::topic)+1"/>
+		    <xsl:variable name="sect1-level" select="count(ancestor::sect1/preceding-sibling::sect1)+1"/>
+		    <xsl:variable name="sect2-level" select="count(ancestor::sect2/preceding-sibling::sect2)+1"/>
+		     <xsl:variable name="sect3-level" select="count(ancestor::sect3/preceding-sibling::sect3)+1"/>
+		      <xsl:variable name="sect4-level" select="count(parent::sect4/preceding-sibling::sect4)+1"/>
+			<h5 xmlns="http://www.w3.org/1999/xhtml" style="margin-left:-25px">
+			<xsl:call-template name="echo.id"/>
+			<xsl:value-of select="concat($topic-level,'.',$sect1-level,'.',$sect2-level,'.',$sect3-level,'.',$sect4-level,' ')"/>
+			<xsl:apply-templates/>
+			</h5>
 		</xsl:when>
 		</xsl:choose>
 	</xsl:template>
@@ -76,25 +106,25 @@
 		<xsl:apply-templates/>
 	</xsl:template>
 	<xsl:template match="sect1">
-		<div xmlns="http://www.w3.org/1999/xhtml">
-			<xsl:call-template name="echo.id"/>
+		<div xmlns="http://www.w3.org/1999/xhtml" style="margin-left:50px;">
+		    <xsl:call-template name="echo.id"/>
 			<xsl:apply-templates/>
 		</div>
 	</xsl:template>
 	<xsl:template match="sect2">
-		<div xmlns="http://www.w3.org/1999/xhtml">
+		<div xmlns="http://www.w3.org/1999/xhtml" style="margin-left:50px;">
 			<xsl:call-template name="echo.id"/>
 			<xsl:apply-templates/>
 		</div>
 	</xsl:template>
 	<xsl:template match="sect3">
-		<div xmlns="http://www.w3.org/1999/xhtml">
+		<div xmlns="http://www.w3.org/1999/xhtml"  style="margin-left:50px;">
 			<xsl:call-template name="echo.id"/>
 			<xsl:apply-templates/>
 		</div>
 	</xsl:template>
 	<xsl:template match="sect4">
-		<div xmlns="http://www.w3.org/1999/xhtml">
+		<div xmlns="http://www.w3.org/1999/xhtml" style="margin-left:50px;">
 			<xsl:call-template name="echo.id"/>
 			<xsl:apply-templates/>
 		</div>
@@ -162,13 +192,13 @@
 		</span>
 	</xsl:template>
 	<xsl:template match="unorderedlist">
-		<ul xmlns="http://www.w3.org/1999/xhtml">
+		<ul xmlns="http://www.w3.org/1999/xhtml" style="margin-left:50px;">
 			<xsl:call-template name="echo.id"/>
 			<xsl:apply-templates/>
 		</ul>
 	</xsl:template>
 	<xsl:template match="orderedlist">
-		<ol xmlns="http://www.w3.org/1999/xhtml">
+		<ol xmlns="http://www.w3.org/1999/xhtml" style="margin-left:50px;">
 			<xsl:call-template name="echo.id"/>
 			<xsl:apply-templates/>
 		</ol>

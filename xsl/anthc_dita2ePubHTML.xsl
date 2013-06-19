@@ -10,6 +10,10 @@
 				</head>
 				<body>
 				    <xsl:variable name="topic-level" select="count(preceding-sibling::topic)"/>
+				     <xsl:variable name="appendix-count" select="count(preceding-sibling::topic[child::appendix])"/>
+				     <xsl:variable name="appendix-level">
+				       <xsl:number value="$appendix-count+1" format="A"/>    
+				     </xsl:variable>
 				    <table style="width:100%;">
 					   <tbody>
 					        <tr>
@@ -17,8 +21,15 @@
 							 <td style="text-align:center;border-bottom:2px solid;width:33%;">
 								<h1 xmlns="http://www.w3.org/1999/xhtml">
 									<xsl:attribute name="style">text-align:center;font-weight:normal;text-transform:uppercase;</xsl:attribute>
-									<xsl:value-of select="$topic-level+1"/>
-								</h1><!--use div rather than h1-->
+									<xsl:choose>
+										<xsl:when test="child::chapter">
+										 <xsl:value-of select="$topic-level"/>
+										</xsl:when>
+										<xsl:when test="child::appendix">
+										  <xsl:value-of select="$appendix-level"/>
+										</xsl:when>
+									</xsl:choose>
+									</h1><!--use div rather than h1-->
 							 </td>
 							 <td style="width:33%;"></td>
 							</tr>
@@ -38,6 +49,17 @@
 		<!--h1 xmlns="http://www.w3.org/1999/xhtml"--><xsl:apply-templates/><!--/h1-->
 	</xsl:template>
 	<xsl:template match="title">
+	<xsl:variable name="appendix-count" select="count(ancestor::topic/preceding-sibling::topic[child::appendix])"/>
+     <xsl:variable name="topic-level">
+		 <xsl:choose>
+			<xsl:when test="ancestor::chapter">
+				 <xsl:value-of select="count(ancestor::topic/preceding-sibling::topic)"/>
+			</xsl:when>
+			<xsl:when test="ancestor::appendix">
+				 <xsl:number value="$appendix-count+1" format="A"/>
+			</xsl:when>
+		</xsl:choose>
+	</xsl:variable>
 	<xsl:choose>
 		<xsl:when test="parent::chapter|parent::appendix">
 			<h1 xmlns="http://www.w3.org/1999/xhtml">
@@ -47,8 +69,8 @@
 			</h1>
 		</xsl:when>
 		<xsl:when test="parent::sect1">
-		    <xsl:variable name="topic-level" select="count(ancestor::topic/preceding-sibling::topic)+1"/>
-		    <xsl:variable name="sect1-level" select="count(parent::sect1/preceding-sibling::sect1)+1"/>
+		    <!--xsl:variable name="topic-level" select="count(ancestor::topic/preceding-sibling::topic)"/-->
+		   <xsl:variable name="sect1-level" select="count(parent::sect1/preceding-sibling::sect1)"/>
 		    <h2 xmlns="http://www.w3.org/1999/xhtml" style="margin-left:-25px">
 			<xsl:call-template name="echo.id"/>
 			<xsl:value-of select="concat($topic-level,'.',$sect1-level,' ')"/>
@@ -56,8 +78,7 @@
 			</h2>
 		</xsl:when>
 		<xsl:when test="parent::sect2">
-		    <xsl:variable name="topic-level" select="count(ancestor::topic/preceding-sibling::topic)+1"/>
-		    <xsl:variable name="sect1-level" select="count(ancestor::sect1/preceding-sibling::sect1)+1"/>
+		   <xsl:variable name="sect1-level" select="count(ancestor::sect1/preceding-sibling::sect1)"/>
 		    <xsl:variable name="sect2-level" select="count(parent::sect2/preceding-sibling::sect2)+1"/>
 			<h3 xmlns="http://www.w3.org/1999/xhtml" style="margin-left:-25px">
 			<xsl:call-template name="echo.id"/>
@@ -66,8 +87,7 @@
 			</h3>
 		</xsl:when>
 		<xsl:when test="parent::sect3">
-		    <xsl:variable name="topic-level" select="count(ancestor::topic/preceding-sibling::topic)+1"/>
-		    <xsl:variable name="sect1-level" select="count(ancestor::sect1/preceding-sibling::sect1)+1"/>
+		    <xsl:variable name="sect1-level" select="count(ancestor::sect1/preceding-sibling::sect1)"/>
 		    <xsl:variable name="sect2-level" select="count(ancestor::sect2/preceding-sibling::sect2)+1"/>
 		     <xsl:variable name="sect3-level" select="count(parent::sect3/preceding-sibling::sect3)+1"/>
 			<h4 xmlns="http://www.w3.org/1999/xhtml" style="margin-left:-25px">
@@ -77,8 +97,7 @@
 			</h4>
 		</xsl:when>
 		<xsl:when test="parent::sect4">
-		    <xsl:variable name="topic-level" select="count(ancestor::topic/preceding-sibling::topic)+1"/>
-		    <xsl:variable name="sect1-level" select="count(ancestor::sect1/preceding-sibling::sect1)+1"/>
+		    <xsl:variable name="sect1-level" select="count(ancestor::sect1/preceding-sibling::sect1)"/>
 		    <xsl:variable name="sect2-level" select="count(ancestor::sect2/preceding-sibling::sect2)+1"/>
 		     <xsl:variable name="sect3-level" select="count(ancestor::sect3/preceding-sibling::sect3)+1"/>
 		      <xsl:variable name="sect4-level" select="count(parent::sect4/preceding-sibling::sect4)+1"/>
@@ -100,7 +119,10 @@
 		<xsl:apply-templates/>
 	</xsl:template>
 	<xsl:template match="chapter">
+	<div xmlns="http://www.w3.org/1999/xhtml">
+	     <xsl:call-template name="echo.id"/>
 		<xsl:apply-templates/>
+	</div>
 	</xsl:template>
 	<xsl:template match="appendix">
 		<xsl:apply-templates/>
@@ -203,6 +225,20 @@
 			<xsl:apply-templates/>
 		</ol>
 	</xsl:template>
+	<xsl:template match="simplelist">
+		<ol xmlns="http://www.w3.org/1999/xhtml" style="margin-left:50px;">
+			<xsl:call-template name="echo.id"/>
+			<xsl:apply-templates/>
+		</ol>
+	</xsl:template>
+	<xsl:template match="member">
+		<li xmlns="http://www.w3.org/1999/xhtml" style="list-style-type:none">
+		<xsl:call-template name="echo.id"/>
+		<div style="padding-left:1em;display:block;">
+		<xsl:apply-templates/>
+		</div>
+		</li>
+	</xsl:template>
 	<xsl:template match="listitem">
 	<xsl:variable name="list-level">
       <xsl:value-of select="count(ancestor-or-self::orderedlist)"/>	
@@ -272,9 +308,23 @@
    <xsl:template match="simplesect">
    <xsl:apply-templates/>
    </xsl:template>
+   
+   <xsl:template match="footnote">
+   <xsl:apply-templates/>
+   </xsl:template>
 
 	<xsl:template match="mref">
+	<xsl:variable name="mref-rid" select="@rid"/>
+	<xsl:variable name="mref-src">
+	   <xsl:choose>
+					<xsl:when test="ancestor::chapter|ancestor::appendix">
+					  <xsl:value-of select="concat(replace(ancestor::topic//meta-item[@id=$mref-rid]//rda-item/@targetdoc,'.xml','.xhtml'),'#',ancestor::topic//meta-item[@id=$mref-rid]//rulenumber/@rid)"/>
+					</xsl:when>
+		</xsl:choose>
+	  </xsl:variable> 
+	<a xmlns="http://www.w3.org/1999/xhtml" href="{$mref-src}">
 		<xsl:apply-templates/>
+	</a>
 	</xsl:template>
 	<xsl:template match="table">
 		<table xmlns="http://www.w3.org/1999/xhtml">
@@ -354,6 +404,13 @@
 			</xsl:if>
 			<xsl:apply-templates/>
 		</th>
+	</xsl:template>
+	<xsl:template match="ulink">
+	<xsl:variable name="ulink-src" select="@url"/>
+	<a xmlns="http://www.w3.org/1999/xhtml" href="{$ulink-src}">
+	<xsl:call-template name="echo.id"/>
+	<xsl:apply-templates/>
+	</a>
 	</xsl:template>
 	<xsl:template match="xref">
 		<xsl:variable name="target" select="replace(@href,'.*/','')"/>

@@ -17,7 +17,7 @@
 							 <td style="text-align:center;border-bottom:2px solid;width:33%;">
 								<h1 xmlns="http://www.w3.org/1999/xhtml">
 									<xsl:attribute name="style">text-align:center;font-weight:normal;text-transform:uppercase;</xsl:attribute>
-									<xsl:value-of select="$topic-level+1"/>
+									<xsl:value-of select="$topic-level"/>
 								</h1><!--use div rather than h1-->
 							 </td>
 							 <td style="width:33%;"></td>
@@ -47,16 +47,46 @@
 			</h1>
 		</xsl:when>
 		<xsl:when test="parent::sect1">
-			<h2 xmlns="http://www.w3.org/1999/xhtml">
+		    <xsl:variable name="topic-level" select="count(ancestor::topic/preceding-sibling::topic)"/>
+		    <xsl:variable name="sect1-level" select="count(parent::sect1/preceding-sibling::sect1)"/>
+		    <h2 xmlns="http://www.w3.org/1999/xhtml" style="margin-left:-25px">
 			<xsl:call-template name="echo.id"/>
+			<xsl:value-of select="concat($topic-level,'.',$sect1-level,' ')"/>
 			<xsl:apply-templates/>
 			</h2>
 		</xsl:when>
-		<xsl:when test="parent::sect2|parent::sect3|parent::sect4">
-			<h3 xmlns="http://www.w3.org/1999/xhtml">
+		<xsl:when test="parent::sect2">
+		    <xsl:variable name="topic-level" select="count(ancestor::topic/preceding-sibling::topic)"/>
+		    <xsl:variable name="sect1-level" select="count(ancestor::sect1/preceding-sibling::sect1)"/>
+		    <xsl:variable name="sect2-level" select="count(parent::sect2/preceding-sibling::sect2)"/>
+			<h3 xmlns="http://www.w3.org/1999/xhtml" style="margin-left:-25px">
 			<xsl:call-template name="echo.id"/>
+			<xsl:value-of select="concat($topic-level,'.',$sect1-level,'.',$sect2-level,' ')"/>
 			<xsl:apply-templates/>
 			</h3>
+		</xsl:when>
+		<xsl:when test="parent::sect3">
+		    <xsl:variable name="topic-level" select="count(ancestor::topic/preceding-sibling::topic)"/>
+		    <xsl:variable name="sect1-level" select="count(ancestor::sect1/preceding-sibling::sect1)"/>
+		    <xsl:variable name="sect2-level" select="count(ancestor::sect2/preceding-sibling::sect2)"/>
+		     <xsl:variable name="sect3-level" select="count(parent::sect3/preceding-sibling::sect3)"/>
+			<h4 xmlns="http://www.w3.org/1999/xhtml" style="margin-left:-25px">
+			<xsl:call-template name="echo.id"/>
+			<xsl:value-of select="concat($topic-level,'.',$sect1-level,'.',$sect2-level,'.',$sect3-level,' ')"/>
+			<xsl:apply-templates/>
+			</h4>
+		</xsl:when>
+		<xsl:when test="parent::sect4">
+		    <xsl:variable name="topic-level" select="count(ancestor::topic/preceding-sibling::topic)"/>
+		    <xsl:variable name="sect1-level" select="count(ancestor::sect1/preceding-sibling::sect1)"/>
+		    <xsl:variable name="sect2-level" select="count(ancestor::sect2/preceding-sibling::sect2)"/>
+		     <xsl:variable name="sect3-level" select="count(ancestor::sect3/preceding-sibling::sect3)"/>
+		      <xsl:variable name="sect4-level" select="count(parent::sect4/preceding-sibling::sect4)"/>
+			<h5 xmlns="http://www.w3.org/1999/xhtml" style="margin-left:-25px">
+			<xsl:call-template name="echo.id"/>
+			<xsl:value-of select="concat($topic-level,'.',$sect1-level,'.',$sect2-level,'.',$sect3-level,'.',$sect4-level,' ')"/>
+			<xsl:apply-templates/>
+			</h5>
 		</xsl:when>
 		</xsl:choose>
 	</xsl:template>
@@ -242,6 +272,10 @@
    <xsl:template match="simplesect">
    <xsl:apply-templates/>
    </xsl:template>
+   
+   <xsl:template match="footnote">
+   <xsl:apply-templates/>
+   </xsl:template>
 
 	<xsl:template match="mref">
 		<xsl:apply-templates/>
@@ -324,6 +358,13 @@
 			</xsl:if>
 			<xsl:apply-templates/>
 		</th>
+	</xsl:template>
+	<xsl:template match="ulink">
+	<xsl:variable name="ulink-src" select="@url"/>
+	<a xmlns="http://www.w3.org/1999/xhtml" href="{$ulink-src}">
+	<xsl:call-template name="echo.id"/>
+	<xsl:apply-templates/>
+	</a>
 	</xsl:template>
 	<xsl:template match="xref">
 		<xsl:variable name="target" select="replace(@href,'.*/','')"/>

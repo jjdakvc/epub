@@ -147,30 +147,98 @@
 					<left>
 						<xsl:for-each select="$resolved.document//topic">
 							<!--xsl:variable name="topic.id" select="ds:get.normalized.text(title)"/-->
+							<xsl:variable name="topic-level" select="count(preceding-sibling::topic)"/>
 							<xsl:variable name="topic.id">
-							<xsl:choose>
-								<xsl:when test="child::chapter">
+							<!--xsl:choose-->
+								<xsl:if test="child::chapter">
 								   <xsl:value-of select="ds:get.normalized.text(chapter/title)"/>
-								</xsl:when>
-								<xsl:when test="child::appendix">
+								</xsl:if>
+								<xsl:if test="child::appendix">
 								   <xsl:value-of select="ds:get.normalized.text(appendix/title)"/>
-								</xsl:when>
-								<xsl:otherwise/>
-			                 </xsl:choose>
+								</xsl:if>
+								<xsl:if test="descendant::sect1">
+								   <xsl:for-each select="descendant::sect1">
+								     <xsl:value-of select="ds:get.normalized.text(./title)"/>
+								    </xsl:for-each>
+								</xsl:if>
+								<xsl:if test="descendant::sect2">
+								   <xsl:for-each select="descendant::sect2">
+								     <xsl:value-of select="ds:get.normalized.text(./title)"/>
+								    </xsl:for-each>
+								</xsl:if>
+								<xsl:if test="descendant::sect3">
+								   <xsl:for-each select="descendant::sect3">
+								     <xsl:value-of select="ds:get.normalized.text(./title)"/>
+								    </xsl:for-each>
+								</xsl:if>
+								<xsl:if test="descendant::sect4">
+								   <xsl:for-each select="descendant::sect4">
+								     <xsl:value-of select="ds:get.normalized.text(./title)"/>
+								    </xsl:for-each>
+								</xsl:if>
+								<!--xsl:otherwise/>
+			                 </xsl:choose-->
 							</xsl:variable>
 							<xsl:variable name="file.name" select="if(contains(@xtrf,'#'))then(replace(replace(substring-before(@xtrf,'#'),'.*/',''),'xml','xhtml'))else(replace(replace(@xtrf,'.*/',''),'xml','xhtml'))"/>
+							<div>
 							<a href="{$file.name}">
 								<xsl:choose>
 								<xsl:when test="child::chapter">
-								   <xsl:value-of select="chapter/title"/>
+								   <xsl:value-of select="concat($topic-level,' ',chapter/title)"/>
 								</xsl:when>
 								<xsl:when test="child::appendix">
 								   <xsl:value-of select="appendix/title"/>
 								</xsl:when>
 								<xsl:otherwise/>
-			                 </xsl:choose>
+								 </xsl:choose>
 							</a>
-							<br/>
+							</div>
+							<xsl:if test="descendant::sect1">
+								<xsl:for-each select="descendant::sect1">
+									<xsl:variable name="file.name.sect1" select="concat($file.name,'#',@id)"/>
+									   <xsl:variable name="sect1-level" select="count(preceding-sibling::sect1)"/>
+										<div style="margin-left:50px">
+										<a href="{$file.name.sect1}">
+										   <!--xsl:value-of select="'test'"/-->
+											<xsl:value-of select="concat($topic-level,'.',$sect1-level,' ',./title)"/>
+										 </a>
+										 </div>
+								            <xsl:if test="descendant::sect2">
+												<xsl:for-each select="descendant::sect2">
+												<xsl:variable name="file.name.sect2" select="concat($file.name,'#',@id)"/>
+													<div style="margin-left:100px">
+													<a href="{$file.name.sect2}">
+													   <!--xsl:value-of select="'test'"/-->
+														<xsl:value-of select="./title"/>
+													 </a>
+													 </div>
+													     <xsl:if test="descendant::sect3">
+															<xsl:for-each select="descendant::sect3">
+																<xsl:variable name="file.name.sect3" select="concat($file.name,'#',@id)"/>
+																	<div style="margin-left:150px">
+																	<a href="{$file.name.sect3}">
+																	   <!--xsl:value-of select="'test'"/-->
+																		<xsl:value-of select="./title"/>
+																	 </a>
+																	 </div>
+																		 <xsl:if test="descendant::sect4">
+																			<xsl:for-each select="descendant::sect4">
+																				<xsl:variable name="file.name.sect4" select="concat($file.name,'#',@id)"/>
+																					<div style="margin-left:200px">
+																					<a href="{$file.name.sect4}">
+																					   <!--xsl:value-of select="'test'"/-->
+																						<xsl:value-of select="./title"/>
+																					 </a>
+																					 </div>
+																			</xsl:for-each>
+																		</xsl:if>
+															</xsl:for-each>
+														</xsl:if>
+											    <!--br/-->
+											   </xsl:for-each>
+											 </xsl:if>
+								</xsl:for-each>
+							</xsl:if>
 						</xsl:for-each>
 					</left>
 				</body>

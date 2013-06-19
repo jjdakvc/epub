@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<project name="dita2epub" default="dita2epub">
+	<!-- test to see where the plugin is located, plugins or demo -->
+	<xmlcatalog id="dita.catalog.epub">
+    <catalogpath path="C:/Users/Dakota/Desktop/Projects/ALA/epub/catalog-dita.xml"/>
+  </xmlcatalog>
+  <path id="dost.class.path">
+    <pathelement location="C:/Users/Dakota/Desktop/Projects/ALA/epub/lib/dost.jar"/>
+  </path>
+	<target name="eCHAM.map.epub" unless="noMap">
+		<!--mkdir dir="${epub.temp.dir}"/>
+		<makeurl file="${epub.temp.dir}" property="epub.xslt.outdir"/>
+		<makeurl file="${dita.temp.dir}" property="epub.xslt.tempdir"/-->
+		<!--property name="args.xsl" location="${epub.dir}/xsl_eCHAM/ePubProcess.xsl"/-->
+		<xslt processor="trax" basedir="${dita.temp.dir}" destdir="${dita.temp.dir}" classpathref="dost.class.path" style="${args.xsl}" failOnError="No">
+			<param name="output.folder" expression="${output.dir}${file.separator}"/>
+			<param name="input.dir" expression="${input.dir}"/>
+			<xmlcatalog refid="dita.catalog.epub"></xmlcatalog>
+           </xslt>
+		</target>
+	<target name="copy-images" description="Copy image files">
+		<!--copy todir="${output.dir}${file.separator}chmImages" flatten="true">
+			<fileset dir="${input.dir}" includes="**/*.jpg" casesensitive="no"/>
+			<fileset dir="${input.dir}" includes="**/*.png" casesensitive="no"/>
+		</copy-->
+		<copy todir="${output.dir}${file.separator}OEBPS${file.separator}images" flatten="true">
+			<fileset dir="${input.dir}" includes="**/*.jpeg"/>
+			<fileset dir="${input.dir}" includes="**/*.png"/>
+		</copy>
+		<!--copy todir="${output.dir}${file.separator}OEBPS${file.separator}images" flatten="true">
+			<fileset dir="${input.dir}${file.separator}images"/>
+		</copy>
+		<delete dir="${output.dir}${file.separator}chmImages"/-->
+	</target>
+	<target name="copy-ditamap" description="Copy ditamap files">
+		<copy todir="${dita.temp.dir}">
+		   <fileset dir="${input.dir}" includes="**/*.ditamap"/>
+		   <!--fileset dir="${input.parent.dir}/dtd" includes="**/ALADocBook.dtd"/-->
+        </copy>
+		<!--copy file="${input.parent.dir}${file.separator}dtd${file.separator}ALADocBook.dtd" todir="${dita.temp.dir}">
+      </copy-->
+     </target>
+	<!--target name="ditamap-to-xml">
+  <copy todir="${dita.temp.dir}">
+  <fileset dir="${dita.temp.dir}"/>
+  <globmapper from="*.ditamap" to="*.xml"/>
+  </copy>
+  </target-->
+	<target name="clean-temp" description="Clean temp directory">
+		<delete includeemptydirs="true" failonerror="no">
+			<fileset dir="${dita.temp.dir}" casesensitive="no"/>
+		</delete>
+	</target>
+	<target name="eCHAM.epub" unless="noMap" depends="clean-temp,copy-ditamap,eCHAM.map.epub,copy-images,eCHAM.zipepub">
+  </target>
+	<target name="eCHAM.zipepub">
+		<!-- Two steps because mimetype must go in first,
+      uncompressed. Looks like ant puts later zipped files in
+      first, so mimetype is in second zip task. -->
+		<zip destfile="${output.dir}${file.separator}rda.epub" basedir="${output.dir}" includes="mimetype"/>
+		<zip destfile="${output.dir}${file.separator}rda.epub" basedir="${output.dir}" update="true" compress="true" includes="META-INF${file.separator}container.xml,toc.ncx,       content.opf,container.opf,**/*.html,**/*.ncx,**/*.opf,**/*.xhtml,**/*.css,**/*.HTML,**/*.CSS,       **/*.jpg,**/*.jpeg,**/*.gif,**/*.png,**/*.svg,**/*.JPG,**/*.GIF,**/*.PNG,**/*.SVG"/>
+	</target>
+	<!--Target clean-epubOut clean the epub out directory except the .epub file, It is not invoked in the target but left for reference-->
+	<!--target name="clean-epubOut" description="Clean EPUB out directory">
+    <delete includeemptydirs="true">
+      <fileset dir="${output.dir}" casesensitive="no" excludes="**/*.epub"></fileset>
+    </delete>
+  </target-->
+	
+</project>
